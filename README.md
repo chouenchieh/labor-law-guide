@@ -2,6 +2,21 @@
 
 面向出海中国企业的国别劳动法律合规指南自动生成器。输入国家名，桌面输出完整的 Word 合规指南。
 
+## 它能做什么
+
+这是一个 Claude Code 技能——在 Claude Code 中输入 `/labor-law-guide 韩国`，技能会自动：
+
+1. **操控浏览器中的 NotebookLM**，用目标国语言搜索劳动法资料并导入（Discover 功能）
+2. **自动提交 18 个问题**，逐个提取 NotebookLM 基于导入资料生成的法律分析
+3. **生成结构完整的 Word 文档**——封面、前言、法律体系表、六大板块 15 章正文、特别声明，排版规范可直接交付客户
+4. **下载法律 PDF 原文和劳动法律文本模板**，建立文件夹结构
+
+整个过程你只需在开始粘贴一次提示词、在 Discover 中导入 16 个领域的资料来源（约 5-10 分钟），其余 Claude 全自动完成。
+
+核心思路：用 NotebookLM 作为法律研究引擎，Claude Code 作为自动化层，CDP (Chrome DevTools Protocol) 作为浏览器操控通道。不依赖任何第三方搜索 API，所有法律内容获取在 NotebookLM 浏览器内完成。
+
+详细功能说明见 [USAGE.md](USAGE.md)，完整技术流程见 [SKILL.md](SKILL.md)。
+
 ## 工作原理
 
 通过 CDP (Chrome DevTools Protocol) Proxy 操控浏览器中的 Google NotebookLM：
