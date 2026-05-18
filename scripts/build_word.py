@@ -22,7 +22,7 @@ parser.add_argument("--country", required=True, help="Country name in Chinese (e
 parser.add_argument("--short", default="", help="Short country name for chapter titles")
 parser.add_argument("--country-en", default="", help="Country name in English")
 parser.add_argument("--summaries", default="", help="Path to chapter summaries JSON")
-parser.add_argument("--firm", default="浩天律师事务所", help="Law firm name on cover")
+parser.add_argument("--firm", default="[TODO: 律所名称]", help="Law firm name on cover")
 parser.add_argument("--date", default="2026年5月", help="Cover date")
 parser.add_argument("--output", required=True, help="Output .docx path")
 parser.add_argument("--config", default="", help="YAML config for law table, preface, etc.")
@@ -483,18 +483,18 @@ def add_end_body(doc, text):
     return p
 
 disclaimer_default = (
-    '浩天律师事务所编写《' + country + '劳动合规法律指南》'
+    args.firm + '编写《' + country + '劳动合规法律指南》'
     '（以下简称“指南”），仅为帮助中企及时了解' + country + '劳动领域法律、政策及实务最新动态，'
     '助力企业防范用工合规风险、规范用工管理。“指南”所载信息基于现行劳动法律法规、公开政策文件及行业实践整理，'
-    '仅供参考交流，不构成浩天律师事务所及其律师对相关问题的正式法律意见。'
+    '仅供参考交流，不构成' + args.firm + '及其律师对相关问题的正式法律意见。'
 )
 disclaimer_paras = config.get('disclaimer', {}).get('paragraphs', [
     disclaimer_default,
     '鉴于' + country + '劳动法律法规可能发生修订、政策文件可能调整、司法实践存在差异，'
     '且具体用工情境下的法律适用受多种因素影响，读者不应仅依据“指南”内容做出商业决策或人事处理决定。'
     '如需针对具体用工事项寻求法律意见，建议咨询具备' + country + '执业资质的专业律师或当地官方机构。',
-    '浩天律师事务所不为“指南”非经授权转载、引述或修改所导致的误读、遗漏或偏差承担责任。'
-    '“指南”著作权归浩天律师事务所所有，未经书面许可，任何单位或个人不得以营利为目的复制、传播或修改。',
+    args.firm + '不为“指南”非经授权转载、引述或修改所导致的误读、遗漏或偏差承担责任。'
+    '“指南”著作权归' + args.firm + '所有，未经书面许可，任何单位或个人不得以营利为目的复制、传播或修改。',
 ])
 
 add_end_section_header(doc, '特别声明')
@@ -504,10 +504,10 @@ for para in disclaimer_paras:
 doc.add_paragraph()
 
 contact_info = config.get('contact', {})
-contact_name = contact_info.get('name', '梁马玲')
-contact_title = contact_info.get('title', '高级合伙人｜浩天全国劳动法专业委员会牵头合伙人')
-contact_office = contact_info.get('office', '办公室：浩天律师事务所｜上海总部')
-contact_email = contact_info.get('email', 'Email:   marinda.liang@hylandslaw.com')
+contact_name = contact_info.get('name', '[TODO: 联系人姓名]')
+contact_title = contact_info.get('title', '[TODO: 联系人职位]')
+contact_office = contact_info.get('office', '[TODO: 办公室]')
+contact_email = contact_info.get('email', '[TODO: 邮箱]')
 
 add_end_section_header(doc, '联系人')
 p = doc.add_paragraph()
@@ -524,19 +524,12 @@ add_end_body(doc, contact_email)
 doc.add_paragraph()
 
 firm_intro_paras = config.get('firm_intro', {}).get('paragraphs', [
-    '北京浩天律师事务所（“浩天”）创立于1997年，双总部分别位于北京和上海。'
-    '历经多年发展，浩天现已设有北京、上海、广州、深圳、长沙、成都、重庆、大连、福州、贵阳、哈尔滨、海口、杭州、'
-    '合肥、呼和浩特、济南、昆明、南昌、南京、南宁、宁波、青岛、石家庄、沈阳、苏州、天津、太原、温州、武汉、'
-    '乌鲁木齐、西安、银川、郑州、香港等34家办公室，并在全球130多个国家和地区拥有150余家合作律师事务所。',
-    '浩天现有600余位合伙人及顾问，2000余名律师和专业人员，能够为客户提供英语、日语、韩语、德语、法语、'
-    '意大利语等多种语言的法律服务。浩天是中国优秀的大型综合性高端商事律师事务所之一，'
-    '连续多年荣获钱伯斯(Chambers & Partners)、亚洲法律杂志(ALB)、The Legal 500、LegalBand等国际知名法律服务评级机构的推荐及奖项。',
-    '浩天各业务团队均具备扎实的专业技能和丰富的项目经验，他们不仅是深谙各个领域的法律专家，'
-    '而且熟悉中国的投资环境和各个行业的不同商业惯例，拥有深厚的实务经验。'
-    '浩天通过紧密高效的团队合作，能够针对客户的不同需求，提供量身定制的法律解决方案。',
+    '[TODO: 律所简介第一段 — 成立时间、总部、办公室分布]',
+    '[TODO: 律所简介第二段 — 人员规模、服务语言、行业荣誉]',
+    '[TODO: 律所简介第三段 — 业务能力、行业经验、服务特色]',
 ])
 
-add_end_section_header(doc, '浩天简介')
+add_end_section_header(doc, args.firm + '简介')
 for para in firm_intro_paras:
     add_end_body(doc, para)
 
