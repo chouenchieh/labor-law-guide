@@ -114,7 +114,9 @@ proxy: ready
 ```
 labor-law-guide/
 ├── SKILL.md                        # 技能定义（Claude 执行的完整流程）
-├── README.md
+├── README.md                       # 中文说明（中国出海企业）
+├── README.en.md                    # 英文说明
+├── README.ja.md                    # 日文说明（日本出海企业）
 ├── scripts/
 │   ├── cdp-proxy.mjs              # CDP Proxy 服务器（Node.js）
 │   ├── check-deps.mjs             # 环境检查脚本
