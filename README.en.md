@@ -1,5 +1,7 @@
 # Labor Law Guide Skill
 
+[中文](README.md) | [日本語](README.ja.md) | English
+
 An automated country-specific labor law compliance guide generator for Chinese enterprises investing abroad. Input a country name, get a complete Word compliance guide on your desktop.
 
 ## How It Works
