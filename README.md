@@ -98,7 +98,9 @@ python3 scripts/setup.py
 /labor-law-guide 韩国
 ```
 
-完整流程（详见 [SKILL.md](SKILL.md)）：
+完整流程详见 [SKILL.md](SKILL.md)，功能与使用说明见 [USAGE.md](USAGE.md)。
+
+**流程概览：**
 
 | 步骤 | 谁做 | 做什么 |
 |------|------|------|
