@@ -1,0 +1,51 @@
+# 固定 6 部分 15 章结构 — 跨所有国家通用
+# {short_zh} 生成时替换为国家简称（如 荷、加、德）
+
+parts:
+  - name: "第一部分 用工主体与用工模式合规"
+    chapters:
+      - title: "第1章 外商投资企业在{short_zh}用工主体资格合规"
+        answer_key: "外商投资企业用工主体资格合规"
+      - title: "第2章 用工形式选择"
+        answer_key: "用工形式选择"
+
+  - name: "第二部分 劳动合同全生命周期管理"
+    chapters:
+      - title: "第3章 劳动合同订立合规"
+        answer_key: "劳动合同订立合规"
+      - title: "第4章 劳动合同履行与变更合规"
+        answer_key: "劳动合同履行与变更合规"
+      - title: "第5章 劳动合同解除与终止合规"
+        answer_key: "劳动合同解除与终止合规"
+
+  - name: "第三部分 日常用工核心要素合规"
+    chapters:
+      - title: "第6章 工作时间与休息休假合规"
+        answer_key: "工作时间与休息休假合规"
+      - title: "第7章 工作薪酬合规管理"
+        answer_key: "工作薪酬合规管理"
+      - title: "第8章 公积金及保险合规"
+        answer_key: "公积金及保险合规"
+      - title: "第9章 劳动保护与职业安全合规"
+        answer_key: "劳动保护与职业安全合规"
+
+  - name: "第四部分 专项合规管理"
+    chapters:
+      - title: "第10章 商业秘密保护与竞业限制合规"
+        answer_key: "商业秘密保护与竞业限制合规"
+      - title: "第11章 特殊员工保护合规"
+        answer_key: "特殊员工保护合规"
+      - title: "第12章 反歧视与反性骚扰合规"
+        answer_key: "反歧视与反性骚扰合规"
+
+  - name: "第五部分 企业民主管理与劳资协同合规"
+    chapters:
+      - title: "第13章 {short_zh}工会运作合规"
+        answer_key: "工会运作合规"
+      - title: "第14章 企业内部民主管理合规"
+        answer_key: "企业内部民主管理合规"
+
+  - name: "第六部分 劳动争议解决全流程应对"
+    chapters:
+      - title: "第15章 {short_zh}劳动争议解决机制"
+        answer_key: "劳动争议解决机制"

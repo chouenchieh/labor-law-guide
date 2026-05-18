@@ -1,0 +1,73 @@
+# 16 个搜索领域
+# 用于 NotebookLM Discover 搜索来源
+#
+# 搜索语言规则：优先用目标国语言，结果不足时用英语补充
+# zh: 中文参考关键词（翻译为目标国语言后填入 Discover）
+# en: 英语参考关键词（目标国语言结果不足时的备选）
+#
+# 示例：做德国 → 把 zh 翻译成德语搜索；做日本 → 翻译成日语
+
+prompts:
+  - area: "外商投资与用工主体资格"
+    zh: "外商投资企业 用工主体资格 设立形式"
+    en: "foreign investment enterprise employment entity establishment"
+
+  - area: "用工形式选择"
+    zh: "用工形式 劳动合同 劳务派遣 外包 非全日制"
+    en: "employment forms fixed-term contract temporary agency work outsourcing part-time"
+
+  - area: "劳动合同订立"
+    zh: "劳动合同订立 书面形式 试用期 必备条款"
+    en: "employment contract formation probation period mandatory terms"
+
+  - area: "劳动合同履行与变更"
+    zh: "劳动合同变更 调岗 调动 工作条件变更"
+    en: "employment contract variation modification working conditions transfer"
+
+  - area: "劳动合同解除与终止"
+    zh: "劳动合同解除 解雇 裁员 经济补偿 通知期"
+    en: "termination of employment dismissal severance notice period wrongful dismissal"
+
+  - area: "工作时间与休息休假"
+    zh: "工作时间 加班 休息休假 年假 法定节假日 病假"
+    en: "working time overtime rest breaks annual leave public holidays sick leave"
+
+  - area: "工作薪酬与工资"
+    zh: "最低工资 工资支付 加班费 第13个月工资 奖金"
+    en: "minimum wage wage payment overtime pay bonus salary"
+
+  - area: "社会保障与保险"
+    zh: "社会保险 养老保险 医疗保险 失业保险 工伤保险"
+    en: "social security pension insurance health insurance unemployment workers compensation"
+
+  - area: "劳动保护与职业安全"
+    zh: "职业安全 劳动保护 工伤预防 健康安全"
+    en: "occupational health safety workplace injury prevention OHS"
+
+  - area: "商业秘密与竞业限制"
+    zh: "商业秘密保护 竞业限制 保密协议 禁止招揽"
+    en: "trade secrets non-compete confidentiality agreement restrictive covenants"
+
+  - area: "特殊员工保护"
+    zh: "女职工保护 未成年工 残疾员工 育儿假 产假"
+    en: "maternity protection parental leave disability discrimination pregnancy discrimination"
+
+  - area: "反歧视与反骚扰"
+    zh: "反歧视 平等就业 性骚扰 职场骚扰 同工同酬"
+    en: "employment discrimination equal opportunity sexual harassment workplace harassment pay equity"
+
+  - area: "工会与集体谈判"
+    zh: "工会 集体谈判 集体协议 员工代表 罢工"
+    en: "trade union collective bargaining collective agreement employee representation strike"
+
+  - area: "企业民主管理"
+    zh: "企业民主管理 员工参与 工作委员会 员工代表会"
+    en: "works council employee participation employee representation information consultation"
+
+  - area: "劳动争议解决"
+    zh: "劳动争议 劳动仲裁 劳动诉讼 调解 劳动法庭"
+    en: "labor dispute resolution employment tribunal labor court mediation arbitration"
+
+  - area: "外国人就业与工作签证"
+    zh: "外国人就业 工作许可 工作签证 移民劳动法"
+    en: "foreign worker work permit work visa immigration employment foreign national"

@@ -1,0 +1,32 @@
+# 国家配置模板 — 为新国家创建 {country_slug}_config.yaml
+# 大部分内容固定不变，只需修改标记为 [TODO] 的字段
+
+country:
+  name_zh: "[TODO: 中文国名，如 德国]"
+  name_en: "[TODO: 英文国名，如 Germany]"
+  short_zh: "[TODO: 中文简称，如 德]"  # 用于章节标题：外商投资企业在{short_zh}用工主体资格合规
+
+firm:
+  name: "浩天律师事务所"
+  address: "[TODO: 律所地址]"
+  phone: "[TODO: 律所电话]"
+  website: "[TODO: 律所网址]"
+
+document:
+  cover_title: "[TODO] 劳动合规法律指南"
+  cover_subtitle_en: "Labor Law Compliance Guide for Chinese Investors in [TODO: Country]"
+  cover_date: "2026年5月"
+
+# 法律体系表：按国家实际情况填写，包含法律名称、描述和官方链接
+legal_system:
+  laws:
+    - name: "[TODO: 法律名称（中文）]\n(Law Name in Original)"
+      description: "[TODO: 法律描述及核心内容]"
+      link: "[TODO: 官方链接]"
+    # ... 一般 8-15 部核心法律
+
+# 前言（三段式）
+preface:
+  paragraph_1: "[TODO: 中{country}经贸关系背景 + 投资吸引力 + 劳动法体系特点概述]"
+  paragraph_2: "[TODO: 本指南编写依据 + 视角 + 覆盖议题 + 编排体例]"
+  paragraph_3: "[TODO: 特别说明：法律差异/更新/个案建议 + 执业律师咨询建议]"
