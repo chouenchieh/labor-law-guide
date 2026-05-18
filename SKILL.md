@@ -36,7 +36,7 @@ cp -al "$HOME/Library/Application Support/Google/Chrome" /tmp/chrome-profile-lin
     --user-data-dir=/tmp/chrome-profile-link &
 ```
 
-## 完整流程（7 步）
+## 完整流程（6 步）
 
 ### Step 1：创建 NotebookLM 笔记本并配置系统提示词
 
@@ -278,7 +278,7 @@ with open('/tmp/nlm_doc/<country_slug>/answers.json', 'w') as f:
 
 ```bash
 # 使用 gen_summaries.py 脚本（需要 DEEPSEEK_API_KEY 环境变量）
-python3 ~/.claude/skills/labor-law-guide/scripts/gen_summaries.py \
+python3 scripts/gen_summaries.py \
     --answers /tmp/nlm_doc/<country_slug>/answers.json \
     --short "<short>" \
     --output /tmp/nlm_doc/<country_slug>/summaries.json
@@ -347,10 +347,20 @@ done < /tmp/nlm_doc/<country_slug>/laws_verify.txt
 ### Step 5：生成 Word 文档
 
 ```bash
-python3 ~/.claude/skills/labor-law-guide/scripts/build_word.py \
+# CONFIG 优先用国家特定配置，回退到首次 setup.py 生成的通用配置
+COUNTRY_CONFIG=/tmp/nlm_doc/<country_slug>/config.yaml
+FALLBACK_CONFIG=config.yaml
+
+if [ -f "$COUNTRY_CONFIG" ]; then
+    CONFIG="$COUNTRY_CONFIG"
+else
+    CONFIG="$FALLBACK_CONFIG"
+fi
+
+python3 scripts/build_word.py \
     --answers /tmp/nlm_doc/<country_slug>/answers.json \
     --summaries /tmp/nlm_doc/<country_slug>/summaries.json \
-    --config /tmp/nlm_doc/<country_slug>/config.yaml \
+    --config "$CONFIG" \
     --country "<目标国中文名>" \
     --short "<简称>" \
     --country-en "<English Name>" \
@@ -365,13 +375,14 @@ python3 ~/.claude/skills/labor-law-guide/scripts/build_word.py \
 - 六大板块 15 章正文 + 本章小结
 - 特别声明 / 联系人 / 浩天简介
 
-### Step 6：下载法律 PDF + DeepSeek 翻译中文对照表 + 打包
+### Step 6：下载法律 PDF 和模板 PDF + 打包
 
 #### 6.1 创建输出文件夹
 
 ```bash
 FOLDER=~/Desktop/<目标国中文名>劳动合规指南
 mkdir -p "${FOLDER}/法律法规原文PDF"
+mkdir -p "${FOLDER}/法律文本模板/原文"
 ```
 
 #### 6.2 下载每部法律的 PDF 原文
@@ -398,131 +409,50 @@ while IFS='|' read -r idx name url; do
 done < /tmp/nlm_doc/<country_slug>/laws_verify.txt
 ```
 
-#### 6.3 DeepSeek 翻译生成中文法律对照表
+#### 6.3 搜索并下载法律文本模板 PDF
+
+通过 CDP + Google 搜索目标国的以下 10 类模板（用目标国语言搜索）：
+
+| # | 模板类型 | 说明 |
+|---|---------|------|
+| 1 | 固定期限劳动合同 | Fixed-term employment contract |
+| 2 | 无固定期限劳动合同 | Permanent/indefinite employment contract |
+| 3 | 录用通知书 | Offer letter |
+| 4 | 员工手册/企业规章 | Employee handbook / company regulations |
+| 5 | 解除劳动合同通知 | Termination notice |
+| 6 | 保密协议 | NDA / confidentiality agreement |
+| 7 | 竞业限制协议 | Non-compete agreement |
+| 8 | 试用期评估表 | Probation evaluation form |
+| 9 | 警告信/纪律处分 | Warning letter / disciplinary notice |
+| 10 | 辞职信 | Resignation letter |
 
 ```bash
-python3 -c "
-import json, urllib.request, time, yaml
-
-# DeepSeek 翻译法律体系表（需 DEEPSEEK_API_KEY 环境变量）
-python3 -c "
-import json, os, time, yaml, urllib.request
-
-API_KEY = os.environ['DEEPSEEK_API_KEY']
-API_URL = 'https://api.deepseek.com/v1/chat/completions'
-
-with open('/tmp/nlm_doc/<country_slug>/config.yaml') as f:
-    config = yaml.safe_load(f)
-laws = config['legal_system']['laws']
-
-translations = []
-for name, url, desc in laws:
-    payload = json.dumps({
-        'model': 'deepseek-chat',
-        'messages': [
-            {'role': 'system', 'content': '你是目标国法律翻译专家。请将以下法律信息整理为中文对照条目。保留法律原文名称，翻译简介为流畅中文。输出格式：法律原文[换行]中文名称：[翻译][换行]简介：[翻译后的中文简介][换行]链接：[URL]'},
-            {'role': 'user', 'content': f'法律原文: {name}\n链接: {url}\n简介: {desc}'}
-        ],
-        'max_tokens': 400,
-        'temperature': 0.3,
-    }).encode()
-
-    req = urllib.request.Request(API_URL, data=payload, headers={
-        'Content-Type': 'application/json',
-        'Authorization': f'Bearer {API_KEY}',
-    })
-    try:
-        with urllib.request.urlopen(req, timeout=60) as resp:
-            result = json.loads(resp.read())
-            translations.append(result['choices'][0]['message']['content'].strip())
-            print(f'OK: {name[:40]}...')
-    except Exception as e:
-        translations.append(f'{name}\n翻译失败: {e}')
-    time.sleep(1)
-
-with open('/tmp/nlm_doc/<country_slug>/law_translations.json', 'w') as f:
-    json.dump(translations, f, ensure_ascii=False, indent=2)
-print(f'Translated {len(translations)} laws')
-"
-"
-
-# 生成 Word 对照表
-python3 ~/.claude/skills/labor-law-guide/scripts/build_law_reference.py \
-    --translations /tmp/nlm_doc/<country_slug>/law_translations.json \
-    --font "<目标国字体>" \
-    --output "${FOLDER}/<目标国中文名>法律法规中文对照表.docx"
-```
-
-#### 6.4 移动合规指南到文件夹并验证
-
-```bash
-mv ~/Desktop/<目标国中文名>劳动合规指南（2026版）初稿.docx "${FOLDER}/"
-
-echo "=== 输出文件夹结构 ==="
-find "${FOLDER}" -type f | sort
-echo ""
-echo "=== 文件大小 ==="
-du -sh "${FOLDER}"/*
-```
-
-最终输出文件夹 `~/Desktop/<目标国中文名>劳动合规指南/` 包含：
-- `<目标国中文名>劳动合规指南（2026版）初稿.docx`
-- `法律法规中文对照表.docx`（DeepSeek 翻译）
-- `法律法规原文PDF/`（下载的 PDF 原文）
-- `法律文本模板/`（Step 7——外文原文 + DeepSeek 中文翻译对照）
-
-### Step 7：搜索法律文本模板 + DeepSeek 翻译中文对照
-
-#### 7.1 搜索并下载目标国劳动法律文本模板
-
-通过 CDP + Google 搜索目标国的以下模板（用目标国语言搜索）：
-
-| # | 模板类型 | 搜索关键词示例（印尼语） |
-|---|---------|----------------------|
-| 1 | 固定期限劳动合同 | `contoh perjanjian kerja waktu tertentu PKWT doc pdf` |
-| 2 | 无固定期限劳动合同 | `contoh perjanjian kerja waktu tidak tertentu PKWTT doc pdf` |
-| 3 | 录用通知书/Offer Letter | `contoh surat penawaran kerja offer letter doc pdf` |
-| 4 | 员工手册/企业规章 | `contoh peraturan perusahaan buku pedoman karyawan pdf` |
-| 5 | 解除劳动合同通知 | `contoh surat pemutusan hubungan kerja PHK pdf` |
-| 6 | 保密协议 | `contoh perjanjian kerahasiaan non disclosure agreement pdf` |
-| 7 | 竞业限制协议 | `contoh perjanjian non kompetisi non compete agreement pdf` |
-| 8 | 试用期评估表 | `contoh form evaluasi masa percobaan karyawan pdf` |
-| 9 | 警告信/纪律处分 | `contoh surat peringatan karyawan SP1 SP2 SP3 pdf` |
-| 10 | 辞职信/辞职协议 | `contoh surat pengunduran diri resignation letter pdf` |
-
-```bash
-mkdir -p "${FOLDER}/法律文本模板/原文"
-mkdir -p "${FOLDER}/法律文本模板/中文翻译"
-
 TMPL_TAB=$(curl -s "http://localhost:3456/new?url=about:blank" | python3 -c "import sys,json; print(json.load(sys.stdin)['targetId'])")
 
-# 逐个搜索并下载
-declare -A TEMPLATES
-TEMPLATES=(
-  ["固定期限劳动合同"]="contoh perjanjian kerja waktu tertentu PKWT filetype:pdf"
-  ["无固定期限劳动合同"]="contoh perjanjian kerja waktu tidak tertentu PKWTT filetype:pdf"
-  ["录用通知书"]="contoh surat penawaran kerja offer letter filetype:pdf"
-  ["员工手册"]="contoh peraturan perusahaan pedoman karyawan filetype:pdf"
-  ["解除劳动合同通知"]="contoh surat PHK pemutusan hubungan kerja filetype:pdf"
-  ["保密协议"]="contoh perjanjian kerahasiaan karyawan filetype:pdf"
-  ["竞业限制协议"]="contoh perjanjian non kompetisi filetype:pdf"
-  ["警告信"]="contoh surat peringatan SP1 karyawan filetype:pdf"
-  ["辞职信"]="contoh surat pengunduran diri resignation filetype:pdf"
-  ["试用期评估表"]="form evaluasi masa percobaan karyawan filetype:pdf"
-)
-
-for KEY in "${!TEMPLATES[@]}"; do
-  QUERY="${TEMPLATES[$KEY]}"
-  ENCODED=$(python3 -c "import urllib.parse; print(urllib.parse.quote('''${QUERY}'''))")
+# 逐个搜索并下载（用目标国语言替换关键词）
+for KEY in \
+  "固定期限劳动合同" \
+  "无固定期限劳动合同" \
+  "录用通知书" \
+  "员工手册" \
+  "解除劳动合同通知" \
+  "保密协议" \
+  "竞业限制协议" \
+  "警告信" \
+  "辞职信" \
+  "试用期评估表"
+do
+  # 将 KEY 翻译为目标国语言后搜索，例如印尼语：
+  # QUERY="contoh <关键字> filetype:pdf"
+  QUERY="<目标国语言搜索词> filetype:pdf"
+  ENCODED=$(python3 -c "import urllib.parse; print(urllib.parse.quote('${QUERY}'))")
   
   curl -s "http://localhost:3456/navigate?target=${TMPL_TAB}&url=https://www.google.com/search?q=${ENCODED}" > /dev/null
   sleep 5
   
-  # 提取前 3 个 PDF 链接并依次尝试下载
   LINKS=$(curl -s -X POST "http://localhost:3456/eval?target=${TMPL_TAB}" \
     -d "var links=document.querySelectorAll('a[href*=\".pdf\"]'); var urls=[]; for(var i=0;i<Math.min(links.length,3);i++){urls.push(links[i].href)}; JSON.stringify(urls)")
   
-  # 尝试下载第一个可用的 PDF
   PDFS=$(echo "$LINKS" | python3 -c "
 import sys, json
 try:
@@ -543,116 +473,26 @@ except: pass
 done
 ```
 
-#### 7.2 DeepSeek 翻译模板为中文
+目标：至少收集 8 种类型的模板 PDF 原文。
+
+#### 6.4 移动合规指南到文件夹并验证
 
 ```bash
-python3 -c "
-import json, urllib.request, time, os, glob
+mv ~/Desktop/<目标国中文名>劳动合规指南（2026版）初稿.docx "${FOLDER}/"
 
-API_KEY = os.environ['DEEPSEEK_API_KEY']
-API_URL = 'https://api.deepseek.com/v1/chat/completions'
-
-TEMPLATE_DIR = '${FOLDER}/法律文本模板/原文'
-OUT_DIR = '${FOLDER}/法律文本模板/中文翻译'
-
-for pdf_file in glob.glob(TEMPLATE_DIR + '/*.pdf'):
-    basename = os.path.splitext(os.path.basename(pdf_file))[0]
-    out_file = os.path.join(OUT_DIR, basename + '.txt')
-    
-    payload = json.dumps({
-        'model': 'deepseek-chat',
-        'messages': [
-            {'role': 'system', 'content': f'你是一位法律翻译专家。请将以下目标国劳动法律文本模板翻译为中文，保留原文结构和条款编号。同时附上对模板用途和使用场景的中文说明。'},
-            {'role': 'user', 'content': f'请翻译此劳动法律文本模板为中文，说明其用途：文件来源为 {basename}'}
-        ],
-        'max_tokens': 2000,
-        'temperature': 0.3,
-    }).encode()
-
-    req = urllib.request.Request(API_URL, data=payload, headers={
-        'Content-Type': 'application/json',
-        'Authorization': f'Bearer {API_KEY}',
-    })
-    
-    try:
-        with urllib.request.urlopen(req, timeout=120) as resp:
-            result = json.loads(resp.read())
-            translation = result['choices'][0]['message']['content'].strip()
-            with open(out_file, 'w') as f:
-                f.write(f'# {basename}\n\n')
-                f.write('## 中文翻译\n\n')
-                f.write(translation)
-            print(f'TRANSLATED: {basename}')
-    except Exception as e:
-        print(f'ERR {basename}: {e}')
-    time.sleep(1)
-print('Template translations complete')
-"
+echo "=== 输出文件夹结构 ==="
+find "${FOLDER}" -type f | sort
+echo ""
+echo "=== 文件大小 ==="
+du -sh "${FOLDER}"/*
 ```
 
-#### 7.3 生成模板对照 Word 文档
+最终输出文件夹 `~/Desktop/<目标国中文名>劳动合规指南/` 包含：
+- `<目标国中文名>劳动合规指南（2026版）初稿.docx` — 主指南
+- `法律法规原文PDF/` — 下载的法律 PDF 原文
+- `法律文本模板/原文/` — 下载的模板 PDF 原文
 
-```bash
-python3 -c "
-from docx import Document
-from docx.shared import Pt, Cm
-import glob, os
-
-doc = Document()
-for section in doc.sections:
-    section.top_margin = Cm(2.54)
-    section.bottom_margin = Cm(2.54)
-
-style = doc.styles['Normal']
-style.font.name = '等线'
-style.font.size = Pt(11)
-
-title = doc.add_paragraph()
-title.alignment = 1  # center
-run = title.add_run('目标国劳动法律文本模板（双语对照）')
-run.font.size = Pt(16)
-run.font.bold = True
-run.font.name = '黑体'
-
-doc.add_paragraph()
-
-TEMPLATE_DIR = '${FOLDER}/法律文本模板/中文翻译'
-for txt_file in sorted(glob.glob(TEMPLATE_DIR + '/*.txt')):
-    with open(txt_file) as f:
-        content = f.read()
-    
-    # Split sections by ## markers
-    lines = content.strip().split('\n')
-    for line in lines:
-        p = doc.add_paragraph()
-        if line.startswith('# '):
-            run = p.add_run(line[2:])
-            run.font.size = Pt(14)
-            run.font.bold = True
-        elif line.startswith('## '):
-            run = p.add_run(line[3:])
-            run.font.size = Pt(12)
-            run.font.bold = True
-        else:
-            run = p.add_run(line)
-            run.font.size = Pt(10)
-
-doc.save('${FOLDER}/法律文本模板/法律文本模板中文对照.docx')
-print('Template reference doc created')
-"
-```
-
-#### 7.4 验证模板完整度
-
-```bash
-echo "=== 模板文件夹 ==="
-echo "原文 PDF:"
-ls -la "${FOLDER}/法律文本模板/原文/" 2>/dev/null | tail -n +2 | wc -l
-echo "中文翻译:"
-ls -la "${FOLDER}/法律文本模板/中文翻译/" 2>/dev/null | tail -n +2 | wc -l
-```
-
-目标：至少收集 8 种类型的文本模板，每种均有外文原文和中文翻译对照。
+> 翻译由用户自行完成，本 skill 不包含翻译步骤。
 
 ## 异常速查
 

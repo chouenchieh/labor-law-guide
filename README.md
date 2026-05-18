@@ -82,6 +82,14 @@ proxy: ready
 
 在 Chrome 中访问 https://notebooklm.google.com/ 并登录你的 Google 账号。
 
+### 7. 首次配置（律所和联系人信息）
+
+```bash
+python3 scripts/setup.py
+```
+
+按提示填写律所名称、联系人等信息，生成 `config.yaml`。之后每次生成指南都会嵌入这些信息。
+
 ## 使用方法
 
 在 Claude Code 中加载此 skill 后，输入国家名即可：
@@ -106,7 +114,9 @@ proxy: ready
 ```
 ~/Desktop/<国家名>劳动合规指南/
 ├── <国家名>劳动合规指南（2026版）初稿.docx   # 主指南
-└── 法律法规原文PDF/                           # 下载的法律原文
+├── 法律法规原文PDF/                           # 下载的法律原文
+└── 法律文本模板/                              # 下载的模板原文
+    └── 原文/
 ```
 
 ## 文件说明
@@ -120,6 +130,7 @@ labor-law-guide/
 ├── scripts/
 │   ├── cdp-proxy.mjs              # CDP Proxy 服务器（Node.js）
 │   ├── check-deps.mjs             # 环境检查脚本
+│   ├── setup.py                   # 首次配置（律所/联系人信息）
 │   ├── build_word.py              # 主指南 Word 文档生成
 │   ├── build_law_reference.py     # 法律对照表 Word 生成
 │   └── gen_summaries.py           # DeepSeek 章节小结生成

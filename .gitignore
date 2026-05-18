@@ -5,3 +5,4 @@ __pycache__/
 .env
 /tmp/
 *.docx
+config.yaml

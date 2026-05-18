@@ -82,6 +82,14 @@ proxy: ready
 
 Visit https://notebooklm.google.com/ in Chrome and log into your Google account.
 
+### 7. First-time setup (firm and contact info)
+
+```bash
+python3 scripts/setup.py
+```
+
+Fill in your firm name, contact person, and other details. This generates `config.yaml`, which will be embedded into every guide you produce.
+
 ## Usage
 
 Load this skill in Claude Code, then type a country name:
@@ -106,7 +114,9 @@ Full workflow (see [SKILL.md](SKILL.md)):
 ```
 ~/Desktop/<Country>劳动合规指南/
 ├── <Country>劳动合规指南（2026版）初稿.docx   # Main guide
-└── 法律法规原文PDF/                            # Downloaded legal PDFs
+├── 法律法规原文PDF/                            # Downloaded legal PDFs
+└── 法律文本模板/                              # Downloaded template PDFs
+    └── 原文/
 ```
 
 ## File Layout
@@ -120,6 +130,7 @@ labor-law-guide/
 ├── scripts/
 │   ├── cdp-proxy.mjs              # CDP Proxy server (Node.js)
 │   ├── check-deps.mjs             # Environment check script
+│   ├── setup.py                   # First-run firm/contact configuration
 │   ├── build_word.py              # Main guide Word document builder
 │   ├── build_law_reference.py     # Law reference table Word builder
 │   └── gen_summaries.py           # DeepSeek chapter summary generator
