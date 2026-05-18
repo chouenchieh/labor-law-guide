@@ -11,9 +11,13 @@
 2. 用 Claude 生成的 16 个关键词在 NotebookLM Discover 中逐领域搜索并导入资料来源
 
 **Claude 自动做：**
+
 3. 通过 CDP 操控 NotebookLM，提交 18 个问题并逐个提取法律分析
+
 4. 通过 DeepSeek 生成章节小结，建立法律体系表
-5. 生成结构完整的 Word 文档——封面、前言、法律体系表、六大板块 15 章正文、特别声明，排版规范可直接交付客户
+
+5. 生成结构完整的 Word 文档——封面、前言、法律体系表、六大板块 15 章正文、特别声明
+
 6. 下载法律 PDF 原文和劳动法律文本模板，建立文件夹结构
 
 核心思路：用 NotebookLM 作为法律研究引擎，Claude Code 作为自动化层，CDP (Chrome DevTools Protocol) 作为浏览器操控通道。不依赖任何第三方搜索 API，所有法律内容获取在 NotebookLM 浏览器内完成。
